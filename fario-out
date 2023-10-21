@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import os
 import sys
-from datetime import datetime
+from time import sleep
 from dotenv import load_dotenv
 from farcaster.HubService import HubService
 from farcaster.fcproto.message_pb2 import MessageType, Message
 
 import base64
 import argparse
-parser = argparse.ArgumentParser(prog="fario", description="Import/Export Farcaster data.")
+parser = argparse.ArgumentParser(prog="fario-out", description="Import/Export Farcaster data.")
 parser.add_argument("fid", type=int, help="FID")
 parser.add_argument("--casts", help="User casts", action="store_true")
 parser.add_argument("--links", help="User links", action="store_true")
@@ -18,8 +18,7 @@ parser.add_argument("--profile", help="User profile data", action="store_true")
 parser.add_argument("--all", help="Equivalent to --casts --links --recasts --likes --profile", action="store_true")
 parser.add_argument("--limit", type=int, help="Number of records. If more than one types of data are exported, the limit applies to each one separately.", default=sys.maxsize)
 parser.add_argument("--hub", help="Use the hub at <ADDRESS>. Ex. --hub 192.168.1.1:2283", type=str)
-parser.add_argument("-f", "--file", help="Write data to <FILE>. Default is stdout.", type=str)
-parser.add_argument("-v", "--verbose", help="Verbose output", default=False, action="store_false")
+parser.add_argument("--wait", type=int, help="Wait for <WAIT> milliseconds between reads.", default=0)
 args = parser.parse_args()
 
 load_dotenv()
@@ -36,7 +35,7 @@ def encode_message(encoding, message):
 	if encoding == "base64":
 		return base64.b64encode(s)
 	raise Exception("Unknown encoding")
-def get_data(method, fid, page_size):
+def get_data(method, fid, page_size, wait):
 	first_run=True
 	page_token=None
 	count = 0
@@ -50,6 +49,7 @@ def get_data(method, fid, page_size):
 			if count==args.limit:
 				break
 		page_token = casts.next_page_token
+		sleep(wait)
 
 def get_reactions(fid, reaction_type, page_size):
 	first_run=True
@@ -65,39 +65,22 @@ def get_reactions(fid, reaction_type, page_size):
 			if count==args.limit:
 				break
 		page_token = casts.next_page_token
+		sleep(wait)
 
 hub = HubService(hub_address, use_async=False)
 
 if args.casts or args.all:
-	for c in get_data(hub.GetCastsByFid, args.fid, 100):
+	for c in get_data(hub.GetCastsByFid, args.fid, 100, args.wait):
 		print(c)
 if args.links or args.all:
-	for c in get_data(hub.GetLinksByFid, args.fid, 100):
+	for c in get_data(hub.GetLinksByFid, args.fid, 100, args.wait):
 		print(c)
 if args.likes or args.all:
-	for c in get_reactions(args.fid, 1, 100):
+	for c in get_reactions(args.fid, 1, 100, args.wait):
 		print(c)
 if args.recasts or args.all:
-	for c in get_reactions(args.fid, 2, 100):
+	for c in get_reactions(args.fid, 2, 100, args.wait):
 		print(c)
 if args.profile or args.all:
-	for c in get_data(hub.GetUserDataByFid, args.fid, 100):
+	for c in get_data(hub.GetUserDataByFid, args.fid, 100, args.wait):
 		print(c)
-
-	
-	#for cast in casts.messages:
-		#print(cast)
-		#c = cast.SerializeToString()
-		#print(base64.b64encode(c))
-
-	# timestamp = datetime.fromtimestamp(cast.data.timestamp+FARCASTER_EPOCH)
-	# print(cast.data.fid, timestamp.strftime("%Y-%m-%dT%H:%M:%S"), message_types[cast.data.type], cast.hash.hex(),
-	# cast.data.cast_add_body.text[:40].replace("\n"," ") )
-	#print(cast)
-
-"""
-backup = 'CmMIARCYAhjUiZEqIAEqVRoZCJgCEhS/MDG31xTgB1Y3h5/+8ylB6+GPNCIVSXQncyBhcyBlYXN5IGFzIHRoaXMuMiEKH2h0dHBzOi8vaS5pbWd1ci5jb20vdEJuMHpGcS5wbmcSFHaPUTs4oJJfGHFQbTVmdxFBppbwGAEiQNyA42d+mA/ywtxGOcjYbLWXi5BV30Fac7Y5uN5agRP6NbhW/BX+K4CEno6xV35yyFMOod1YIA0t9eZqdhSJswEoATIgaiObQ/n1z+4bgizr7vOGijlJcWYw2jFdZpZY0Mufn0g='
-base64_bytes = base64.b64decode(backup)
-m = Message.FromString(base64_bytes)
-print(m)
-"""

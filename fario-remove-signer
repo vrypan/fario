@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import os
+import json
+
+from web3 import Web3
+from eth_account import Account
+
+from dotenv import load_dotenv
+from farcaster.Signer import Signer
+import argparse
+
+load_dotenv()
+
+parser = argparse.ArgumentParser(prog="fario-remove-signer", description="Remove signer")
+parser.add_argument("--provider", help="OP Eth provider endpoint")
+parser.add_argument("--user_key", help="User's private key in hex.")
+parser.add_argument("signer", help="Signer's public key in hex.")
+args = parser.parse_args()
+
+provider = args.provider if args.provider else os.getenv("OP_ETH_PROVIDER")
+user_key = args.user_key if args.user_key else os.getenv("USER_PRIVATE_KEY")
+
+if not (provider and user_key and args.signer):
+	print('Missing parameters. Either define them in .env or as an option.')
+	sys.exit(1)
+
+account = Account.from_key(user_key)
+#KEY_REGISTRY_ABI = json.loads(resource_string(__name__, "abi/KeyRegistryABI.json"))
+with open("abi/KeyRegistryABI.json") as f:
+	KEY_REGISTRY_ABI = json.load(f)
+w3 = Web3(Web3.HTTPProvider(provider))
+KeyRegistry = w3.eth.contract(
+    address=Web3.to_checksum_address("0x00000000fc9e66f1c6d86d750b4af47ff0cc343d"),
+    abi=KEY_REGISTRY_ABI
+)
+prepare_tx = KeyRegistry.functions.remove(bytes.fromhex(args.signer[2:])).build_transaction({
+    "from": account.address,
+    "nonce": w3.eth.get_transaction_count(account.address),
+})
+
+signed_tx = w3.eth.account.sign_transaction(prepare_tx, private_key=account.key)
+tx_hash = w3.eth.send_raw_transaction(signed_tx.rawTransaction)
+w3.eth.wait_for_transaction_receipt(tx_hash)
+print(f"Tx: {tx_hash.hex()}")

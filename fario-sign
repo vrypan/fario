@@ -8,16 +8,13 @@ from farcaster.fcproto.message_pb2 import HashScheme, Message, MessageData
 from protobuf_to_dict import protobuf_to_dict
 
 import argparse
-parser = argparse.ArgumentParser(prog="fario-resign", description="Re-sign messages uing a new signer.")
+parser = argparse.ArgumentParser(prog="fario-sign", description="Sign (or re-sign) messages uing a new signer.")
 parser.add_argument("key", type=str, help="Signer's private key")
-parser.add_argument("-a", "--address", help="Use the hub at <ADDRESS>. Ex. -a 192.168.1.1:2283", type=str)
-parser.add_argument("--lines", type=int, help="Only parse first <LINES>", default=0)
 args = parser.parse_args()
 
 signer=SigningKey(bytes.fromhex(args.key[2:]))
 signer_pub_key=signer.verify_key.encode()
 
-count=0
 for line in sys.stdin:
     m = Message.FromString(base64.b64decode(line))
     if m.hash_scheme == HashScheme.HASH_SCHEME_BLAKE3:
@@ -28,8 +25,7 @@ for line in sys.stdin:
         m.signature=msg_signature
         m.data_bytes = data_serialized
         out = base64.b64encode(m.SerializeToString()).decode('ascii')
+        print(out)
     else:
         print("HashScheme={m.hash_scheme} not supported.")
         sys.exit(1)
-    if args.lines and count >= args.lines:
-        break
