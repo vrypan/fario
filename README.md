@@ -2,6 +2,10 @@
 
 Farcaster command-line tools.
 
+# Warning
+
+**These scripts have not been tested extensively. Use them at your own risk!**
+
 # Installation
 First install [farcaster-py](https://github.com/vrypan/farcaster-py):
 
