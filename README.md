@@ -19,6 +19,9 @@ Then download this repo and add it to your `$PATH`:
 
 New commands: `fario-out`, `fario-in`, `fario-new-signer`, `fario-remove-signer`, `fario-sign`, `fario-cast`.
 
+# Data format
+Most of the scripts bellow pipe farcaster `Message` objects in and/or out. To make the payload command-line friendly, we serialize it and encode it using base64. So where "`far` data" is mentioned bellow, this is a protobuf Message converted like this: `base64(serialize(Message))`.
+
 # fario-out
 
 `fario-out` is used to export data from a farcaster hub.
