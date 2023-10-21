@@ -1,2 +1,3 @@
-# far
+# fario
 Farcaster command-line tools
+

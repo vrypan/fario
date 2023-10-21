@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+import os
+import sys
+from dotenv import load_dotenv
+from farcaster.HubService import HubService
+from farcaster.fcproto.message_pb2 import Message
+
+import base64
+import argparse
+parser = argparse.ArgumentParser(prog="fario", description="Send messages to Farcaster hub.")
+parser.add_argument("--limit", type=int, help="Number of records.", default=sys.maxsize)
+parser.add_argument("-h", "--hub", help="Use the hub at <ADDRESS>. Ex. -h 192.168.1.1:2283", type=str)
+parser.add_argument("-f", "--file", help="Read data from <FILE>. Default is stdout.", type=str)
+args = parser.parse_args()
+
+load_dotenv()
+hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
+
+if not hub_address:
+	print("No hub address. Use --hub of set FARCASTER_HUB in .env.")
+	sys.exit(1)
+
+hub = HubService(hub_address, use_async=False)
+
+for line in sys.stdin:
+	m = Message.FromString(base64.b64decode(line))
+	r = hub.SubmitMessage(m)
+	print(r)
