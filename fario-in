@@ -9,7 +9,7 @@ import base64
 import argparse
 parser = argparse.ArgumentParser(prog="fario", description="Send messages to Farcaster hub.")
 parser.add_argument("--limit", type=int, help="Number of records.", default=sys.maxsize)
-parser.add_argument("-h", "--hub", help="Use the hub at <ADDRESS>. Ex. -h 192.168.1.1:2283", type=str)
+parser.add_argument("--hub", help="Use the hub at <ADDRESS>. Ex. --hub 192.168.1.1:2283", type=str)
 parser.add_argument("-f", "--file", help="Read data from <FILE>. Default is stdout.", type=str)
 args = parser.parse_args()
 
