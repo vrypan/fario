@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fario"
+version = "0.1"
+dependencies = [
+    "farcaster-py",
+    "six",
+    'importlib-metadata; python_version<"3.8"',
+]
+
+[project.scripts]
+fario-cast="fario.fario_cast:main"
+fario-fid-byname="fario.fario_fid_byname:main"
+fario-in="fario.fario_in:main"
+fario-new-signer="fario.fario_new_signer:main"
+fario-out="fario.fario_out:main"
+fario-remove-signer="fario.fario_remove_signer:main"
+fario-sign="fario.fario_sign:main"
+fario2json="fario.fario2json:main"
+
+[tool.setuptools.packages]
+find = {}
