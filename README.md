@@ -7,13 +7,8 @@ Farcaster command-line tools.
 **These scripts have not been tested extensively. Use them at your own risk!**
 
 # Installation
-First install [farcaster-py](https://github.com/vrypan/farcaster-py):
 
-`pip install farcaster-py`
-
-Then download this repo and add it to your `$PATH`:
-
-`git clone https://github.com/vrypan/fario.git; export PATH="$PATH:$PWD/fario"`
+`pip install fario`
 
 (Any help packaging these scripts as a brew recipe, apt package, etc., will be appreciated!)
 
