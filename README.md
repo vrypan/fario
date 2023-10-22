@@ -180,4 +180,6 @@ However, you can use `fario-out` to backup your content, remove a signer (which 
 
 # Other scripts
 
-`fario-cast` is a simple script that can be used to cast plain text messages (no mentions, or embeds).
+- `fario-cast`: cast plain text messages (no mentions, or embeds).
+- `fario-fid-byname`: Get a username's fid
+
