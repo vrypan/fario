@@ -1,15 +1,22 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-requirements-txt"]
+build-backend = "hatchling.build"
 
 [project]
 name = "fario"
-version = "0.1"
+version = "0.2"
+readme = "README.md"
+license = "MIT"
+keywords = ['farcaster']
 dependencies = [
     "farcaster-py",
     "six",
     'importlib-metadata; python_version<"3.8"',
 ]
+
+[project.urls]
+Documentation = "https://github.com/vrypan/fario"
+Source = "https://github.com/vrypan/fario"
 
 [project.scripts]
 fario-cast="fario.fario_cast:main"
