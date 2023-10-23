@@ -2,9 +2,7 @@
 
 Farcaster command-line tools.
 
-# Warning
-
-**These scripts have not been tested extensively. Use them at your own risk!**
+**Warning: These scripts have not been tested extensively. Use them at your own risk!**
 
 # Installation
 
@@ -13,6 +11,9 @@ Farcaster command-line tools.
 (Any help packaging these scripts as a brew recipe, apt package, etc., will be appreciated!)
 
 New commands: `fario-out`, `fario-in`, `fario-new-signer`, `fario-remove-signer`, `fario-sign`, `fario-cast`.
+
+Most of these command will require you to have access to a Farcaster hub: [How to get access to a hub](How_to_get_access_to_a_hub).
+
 
 # Data format
 Most of the scripts bellow pipe farcaster `Message` objects in and/or out. To make the payload command-line friendly, we serialize it and encode it using base64. So where "`far` data" is mentioned bellow, this is a protobuf Message converted like this: `base64(serialize(Message))`.
