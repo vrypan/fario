@@ -249,3 +249,25 @@ fario-out --casts $(fario-fid-byname vrypan.eth) | \
 2022-08: ▇▇▇▇ 26.00
 2022-07: ▇ 10.00
 ```
+
+## Users that followed me, per month
+
+```
+ario-out --inlinks $(fario-fid-byname vrypan.eth) | \                                                                                                                                                                git:main*
+fario2json | \
+jq '.[].data.timestamp' | \
+sort -r | \
+xargs -L1 -I {} dc -e "{} 1609459200 + p"  | \
+xargs -L1 -I{}  date -r {} +"%Y-%m" | \
+uniq -c | \
+awk '{ print $2, $1}' | termgraph --title "Followed me" --width=20 --format='{:.0f}'
+
+# Followed me
+
+2023-10: ▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇▇ 177
+2023-09: ▇▇▇▇▇▇▇▇▇▇▇▇ 108
+2023-08: ▇ 16
+2023-07: ▇▇ 22
+2023-06: ▏ 5
+2023-05: ▏ 3
+```
