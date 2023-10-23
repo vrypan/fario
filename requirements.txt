@@ -1,2 +1,1 @@
-protobuf-to-dict
 farcaster-py
