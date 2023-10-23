@@ -19,7 +19,7 @@ some safeguards in place.
 You will also need RPC endpoints for Ethereum nodes on L2 OP Mainnet and L1 Mainnet. 
 You can use a service like [Alchemy](https://www.alchemy.com/) or [Infura](https://www.infura.io/).
 
-## Running your own Hub on your own hardware
+# Running your own Hub on your own hardware
 
 My favourite option is running your own hub at home. I'm running two: 
 
@@ -32,13 +32,13 @@ but... it works.
 If you want to setup your own node, check out [Hubble](https://www.thehubble.xyz/intro/hubble.html).
 The steps are quite straight forward.
 
-## Running your own Hub on a general purpose cloud service provider
+# Running your own Hub on a general purpose cloud service provider
 
 Using a VM on a cloud service like AWS or Google Cloud is not much different: Set up a VM, and follow [Hubble's](https://www.thehubble.xyz/intro/hubble.html) documentation.
 
 There is also a nice video tutorial on how to [run Hubble on AWS](https://www.youtube.com/watch?v=rKoFJq_kHVc).
 
-## Letting Neynar run your hub
+# Letting Neynar run your hub
 
 [Neynar](https://neynar.com) specialises in Farcaster hosting services. 
 

@@ -12,7 +12,7 @@ Farcaster command-line tools.
 
 New commands: `fario-out`, `fario-in`, `fario-new-signer`, `fario-remove-signer`, `fario-sign`, `fario-cast`.
 
-Most of these command will require you to have access to a Farcaster hub: [How to get access to a hub](How_to_get_access_to_a_hub).
+Most of these command will require you to have access to a Farcaster hub: [How to get access to a hub](HOWTO/How_to_get_access_to_a_hub.md).
 
 
 # Data format
