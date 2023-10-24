@@ -222,7 +222,7 @@ fario-out --casts $(fario-fid-byname vrypan.eth) | \
   sort -r | \
   xargs -L1 -I {} dc -e "{} 1609459200 + p"  | \
   xargs -L1 -I{}  date -r {} +"%Y-%m" | \
-  uniq -c |
+  uniq -c
 
  282 2023-10
  271 2023-09
@@ -277,7 +277,7 @@ fario-out --casts $(fario-fid-byname vrypan.eth) | \
 ## Users that followed me, per month
 
 ```
-ario-out --inlinks $(fario-fid-byname vrypan.eth) | \                                                                                                                                                                git:main*
+fario-out --inlinks $(fario-fid-byname vrypan.eth) | \                                                                                                                                                                git:main*
 fario2json | \
 jq '.[].data.timestamp' | \
 sort -r | \
