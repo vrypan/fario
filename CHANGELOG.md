@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.5.2] - 2023-10-24
+- Bug fixes
+- Dynamic dependancies
+- Depends on farcaster-py==0.0.6
+
 ## [0.5] - 2023-10-24
 
 - `fario-signers` replaced `fario-new-signer`, `fario-remove-signer` and `fario-sign`
