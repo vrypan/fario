@@ -92,7 +92,7 @@ Now, **ANYONE** who holds the Signer private key can cast on behalf of my accoun
 
 I waited a few seconds, and refreshed my profile:
 
-[image]
+![screenshot](hello_world_1.png)
 
 ## Remove the Signer
 
