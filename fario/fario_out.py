@@ -52,7 +52,7 @@ def main():
 	parser.add_argument("--profile", help="User profile data", action="store_true")
 	parser.add_argument("--all", help="Equivalent to --casts --links --recasts --likes --profile", action="store_true")
 	parser.add_argument("--limit", type=int, help="Number of records. If more than one types of data are exported, the limit applies to each one separately.", default=sys.maxsize)
-	parser.add_argument("--hub", help="Use the hub at <ADDRESS>. Ex. --hub 192.168.1.1:2283", type=str)
+	parser.add_argument("--hub", help="Use the hub at <HUB>. Ex. --hub 192.168.1.1:2283", type=str)
 	parser.add_argument("--wait", type=int, help="Wait for <WAIT> milliseconds between reads.", default=0)
 	args = parser.parse_args()
 
