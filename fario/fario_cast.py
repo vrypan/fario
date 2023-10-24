@@ -29,7 +29,7 @@ def main():
 		print("Error: Timestamp must be after Jan 1, 2021 00:00:00 UTC.")
 		sys.exit(1)
 
-	if len(args.embed) > 2:
+	if args.embed and len(args.embed) > 2:
 		print("Error: More than 2 embeds.")
 		sys.exit(1)		
 	hub = HubService(hub_address, use_async=False)
@@ -40,12 +40,19 @@ def main():
 		bytes.fromhex(app_signer[2:])
 	)
 	
-	data = message_builder.cast.add(
-		fid = user_fid, 
-		text = args.text[:320],
-		embeds = [ Embed(url=e) for e in args.embed ],
-		timestamp = timestamp
-	)
+	if args.embed:
+		data = message_builder.cast.add(
+			fid = user_fid, 
+			text = args.text[:320],
+			embeds = [ Embed(url=e) for e in args.embed ],
+			timestamp = timestamp
+		)
+	else:
+		data = message_builder.cast.add(
+			fid = user_fid, 
+			text = args.text[:320],
+			timestamp = timestamp
+		)
 	msg  = message_builder.message(data)
 
 	ret  = hub.SubmitMessage(msg)
