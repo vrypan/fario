@@ -4,15 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fario"
-dynamic = ['version']
+dynamic = ["version", "dependencies"]
+
 readme = "README.md"
 license = "MIT"
 keywords = ['farcaster']
-dependencies = [
-    "farcaster-py",
-    "six",
-    'importlib-metadata; python_version<"3.8"',
-]
 
 [project.urls]
 Documentation = "https://github.com/vrypan/fario"
@@ -31,3 +27,6 @@ find = {}
 
 [tool.hatch.version]
 path = "fario/__about__.py"
+
+[tool.hatch.metadata.hooks.requirements_txt]
+files = ["requirements.txt"]

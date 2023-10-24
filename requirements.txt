@@ -1,1 +1,4 @@
-farcaster-py
+farcaster-py==0.0.6
+blake3
+pynacl
+six
