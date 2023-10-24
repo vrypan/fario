@@ -10,7 +10,7 @@ Farcaster command-line tools.
 
 (Any help packaging these scripts as a brew recipe, apt package, etc., will be appreciated!)
 
-New commands: `fario-out`, `fario-in`, `fario-new-signer`, `fario-remove-signer`, `fario-sign`, `fario-cast`.
+New commands: `fario-out`, `fario-in`, `fario-signers`, `fario-cast`.
 
 Most of these command will require you to have access to a Farcaster hub: [How to get access to a hub](HOWTO/How_to_get_access_to_a_hub.md).
 
@@ -105,14 +105,33 @@ options:
   --wait WAIT  Wait for <WAIT> milliseconds between message submissions.
 ```
 
-# fario-new-signer
+# fario-signers
+
+Add, remove, list signers and sign farcaster messages.
+
+```
+fario-signers --help
+
+usage: fario-signers [-h] [--version] [--raw] {add,remove,list,sign} ...
+
+positional arguments:
+  {add,remove,list,sign}
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  --raw                 Output raw values, tab separated.
+```
+## fario-signers add
 
 Create a new signer for an application and approve it using a user's private key.
 
 ```
-usage: fario-new-signer [-h] [--provider PROVIDER] [--user_fid USER_FID] [--user_key USER_KEY] [--app_fid APP_FID] [--app_key APP_KEY]
+fario-signers add --help
 
-Create a new signer
+usage: fario-signers add [-h] [--provider PROVIDER] [--user_fid USER_FID] [--user_key USER_KEY] [--app_fid APP_FID] [--app_key APP_KEY]
+
+Create a new signer. Using --raw will output tx_hash, user_fis, app_fid, signer_bublic_key, signer_private_key as a tab-separated list.
 
 options:
   -h, --help           show this help message and exit
@@ -123,14 +142,16 @@ options:
   --app_key APP_KEY    Application's private key in hex.
 ```
 
-# fario-remove-signer
+## fario-signers remove
 
 Remove a signer already approved by a user.
 
 ```
-usage: fario-remove-signer [-h] [--provider PROVIDER] [--user_key USER_KEY] signer
+fario-signers remove --help
 
-Remove signer
+usage: fario-signers remove [-h] [--provider PROVIDER] [--user_key USER_KEY] signer
+
+Remove a signer. Using --raw will output only the tx_hash.
 
 positional arguments:
   signer               Signer's public key in hex.
@@ -141,12 +162,14 @@ options:
   --user_key USER_KEY  User's private key in hex.
   ```
 
-# fario-sign
+## fario-signers sign
 
-It reads messages in `far` format from stdin, signs them using a new signer, and outputs them in `far` format to stdout.
+It reads messages in "far" format from stdin, signs them using a new signer, and outputs them in `far` format to stdout.
 
 ```
-usage: fario-sign [-h] key
+fario-signers sign --help
+
+usage: fario-signers sign [-h] key
 
 Sign (or re-sign) messages uing a new signer.
 
@@ -161,9 +184,9 @@ Example:
 Compare the output (hashes, signers and signatures) of the following commands:
 
 1. ```fario-out --casts --limit=5 280 | fario2json | jq```
-2. ```fario-out --casts --limit=5 280 | fario-sign <key> | fario2json```
+2. ```fario-out --casts --limit=5 280 | fario-signers sign <key> | fario2json```
 
-You could pipe the output of `fario-sign` to `fario-in` to post the new messages to a hub. 
+You could pipe the output of `fario-signers sign` to `fario-in` to post the new messages to a hub. 
 
 Posting these messages to a hub can fail for various reasons:
 1. Message hash is already posted. (i.e. you can repost the same message, even if the signature is changed)
@@ -172,7 +195,7 @@ Posting these messages to a hub can fail for various reasons:
 
 **VERY INTERESTING USE CASE**
 
-However, you can use `fario-out` to backup your content, remove a signer (which results in all mesages signed by it to be removed!), then use `fario-sign` and `fario-in` to re-sign them with a new signer and upload them to farcaster!
+However, you can use `fario-out` to backup your content, remove a signer (which results in all mesages signed by it to be removed!), then use `fario-signers sign` and `fario-in` to re-sign them with a new signer and upload them to farcaster!
 
 # Other scripts
 

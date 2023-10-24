@@ -22,10 +22,8 @@ Source = "https://github.com/vrypan/fario"
 fario-cast="fario.fario_cast:main"
 fario-fid-byname="fario.fario_fid_byname:main"
 fario-in="fario.fario_in:main"
-fario-new-signer="fario.fario_new_signer:main"
 fario-out="fario.fario_out:main"
-fario-remove-signer="fario.fario_remove_signer:main"
-fario-sign="fario.fario_sign:main"
+fario-signers="fario.fario_signers:main"
 fario2json="fario.fario2json:main"
 
 [tool.setuptools.packages]
