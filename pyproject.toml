@@ -30,3 +30,6 @@ fario2json="fario.fario2json:main"
 
 [tool.setuptools.packages]
 find = {}
+
+[tool.hatch.version]
+path = "fario/__about__.py"

@@ -9,14 +9,6 @@ from farcaster.fcproto.message_pb2 import MessageType, Message
 import base64
 import argparse
 
-def encode_message(encoding, message):
-	s = message.SerializeToString()
-	if encoding == "raw":
-		return s
-	if encoding == "base64":
-		return base64.b64encode(s)
-	raise Exception("Unknown encoding")
-
 def get_data(method, fid, page_size, limit, wait):
 	first_run=True
 	page_token=None
