@@ -6,10 +6,12 @@ from farcaster.HubService import HubService
 from farcaster.fcproto.message_pb2 import MessageType, Message
 from google.protobuf.json_format import MessageToDict, MessageToJson
 import argparse
+from . __about__ import version
 
 def main():
 	parser = argparse.ArgumentParser(prog="fario2json", description="Convert fario export to json")
 	parser.add_argument("--lines", type=int, help="Only parse first <LINES>", default=0)
+	parser.add_argument('--version', action='version', version='%(prog)s v'+version)
 	args = parser.parse_args()
 
 	print("[")

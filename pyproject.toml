@@ -21,6 +21,7 @@ fario-in="fario.fario_in:main"
 fario-out="fario.fario_out:main"
 fario-signers="fario.fario_signers:main"
 fario2json="fario.fario2json:main"
+json2fario="fario.json2fario:json2fario"
 
 [tool.setuptools.packages]
 find = {}

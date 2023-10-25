@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.3] - 2023-10-25
+- Removed protobuf_to_dict/.
+- fario2json uses google.protobuf.json_format now.
+- fario2json --version option
+- Bug fix. Message hash was not updated when re-signing with `fario-signers sign`
+- Introduced json2fario. Needs work.
+
 ## [0.5.2] - 2023-10-24
 - Bug fixes
 - Dynamic dependancies
