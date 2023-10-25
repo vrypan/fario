@@ -23,7 +23,7 @@ def signer_add(args):
 
     if not (provider and user_fid and user_key and app_fid and app_key):
         if not args.raw:
-            print('Missing parameters. Either define them in .env or as an option.')
+            print('Error: [fario-signers] Missing parameters. Either define them in .env or as an option.', file=sys.stderr)
         sys.exit(1)
 
     s = Signer( provider, int(user_fid), user_key, int(app_fid), app_key )
@@ -51,7 +51,7 @@ def signer_revoke(args):
 
     if not (provider and user_key and args.signer):
         if not args.raw:
-            print('Missing parameters. Either define them in .env or as an option.')
+            print('Error: [fario-signers] Missing parameters. Either define them in .env or as an option.', file=sys.stderr)
         sys.exit(1)
         
     tx = removeSigner(provider, user_key, args.signer)
@@ -65,7 +65,7 @@ def signer_list(args):
     hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
 
     if not hub_address:
-        print("No hub address. Use --hub of set FARCASTER_HUB in .env.")
+        print("Error: [fario-signers] No hub address. Use --hub of set FARCASTER_HUB in .env.", file=sys.stderr)
         sys.exit(1)
     from farcaster.HubService import HubService
     hub = HubService(hub_address, use_async=False)
@@ -100,12 +100,18 @@ def signer_sign(args):
             msg_signature = signer.sign(msg_hash).signature
             m.signer=signer_pub_key
             m.signature=msg_signature
-            m.hash = msg_hash
-            m.data_bytes = data_serialized
+            if msg_hash != m.hash:
+                if args.keep_hash:
+                    print("Error: [fario-signers] New message hash != old message hash, but --keep-hash=True.",
+                        file=sys.stderr)
+                    sys.exit(1)
+                else:
+                    m.hash = msg_hash
+                    m.data_bytes = data_serialized
             out = base64.b64encode(m.SerializeToString()).decode('ascii')
             print(out)
         else:
-            print("HashScheme={m.hash_scheme} not supported.")
+            print("Error: [fario-signers] HashScheme={m.hash_scheme} not supported.", file=sys.stderr)
             sys.exit(1)
 
 def main():
@@ -119,27 +125,28 @@ def main():
         signer_private_key as a tab-separated list.
         """)
     cmd_signer_add.add_argument("--provider", help="OP Eth provider endpoint")
-    cmd_signer_add.add_argument("--user_fid", help="User's fid.")
-    cmd_signer_add.add_argument("--user_key", help="User's private key in hex.")
-    cmd_signer_add.add_argument("--app_fid", help="Application's fid.")
-    cmd_signer_add.add_argument("--app_key", help="Application's private key in hex.")
+    cmd_signer_add.add_argument("--user-fid", help="User's fid.")
+    cmd_signer_add.add_argument("--user-key", help="User's private key in hex.")
+    cmd_signer_add.add_argument("--app-fid", help="Application's fid.")
+    cmd_signer_add.add_argument("--app-key", help="Application's private key in hex.")
     cmd_signer_add.set_defaults(func=signer_add)
 
     cmd_signer_remove = subparser.add_parser("remove", description="""Remove a signer.
         Using --raw will output only the tx_hash.""")
     cmd_signer_remove.add_argument("--provider", help="OP Eth provider endpoint")
-    cmd_signer_remove.add_argument("--user_key", help="User's private key in hex.")
+    cmd_signer_remove.add_argument("--user-key", help="User's private key in hex.")
     cmd_signer_remove.add_argument("signer", help="Signer's public key in hex.")
     cmd_signer_remove.set_defaults(func=signer_revoke)
 
     cmd_signer_list = subparser.add_parser("list", description="list signers")
     cmd_signer_list.add_argument("--hub", help="Use the hub at <HUB>. Ex. --hub 192.168.1.1:2283", type=str)
-    cmd_signer_list.add_argument('--with_fnames', action='store_true', help="Display the fname of the Signer owner.")
+    cmd_signer_list.add_argument('--with-fnames', action='store_true', help="Display the fname of the Signer owner.")
     cmd_signer_list.add_argument("fid", type=int, help="Signers for <FID>")
     cmd_signer_list.set_defaults(func=signer_list)
 
     cmd_signer_sign = subparser.add_parser("sign", description="Sign (or re-sign) messages uing a new signer.")
     cmd_signer_sign.add_argument("key", type=str, help="Signer's private key")
+    cmd_signer_sign.add_argument('--keep-hash', default="False", action='store_true', help="Do not change the message hash.")
     cmd_signer_sign.set_defaults(func=signer_sign)    
 
     args = parser.parse_args()
