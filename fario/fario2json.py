@@ -1,16 +1,10 @@
 #!/usr/bin/env python
-import os
+
 import sys
-from datetime import datetime
-from dotenv import load_dotenv
+import base64
 from farcaster.HubService import HubService
 from farcaster.fcproto.message_pb2 import MessageType, Message
-import json
-FARCASTER_EPOCH = 1609459200  # January 1, 2021 UTC
-
-import base64
-from fario.protobuf_to_dict import protobuf_to_dict
-
+from google.protobuf.json_format import MessageToDict, MessageToJson
 import argparse
 
 def main():
@@ -23,7 +17,7 @@ def main():
 	count=0
 	for line in sys.stdin:
 		m = Message.FromString(base64.b64decode(line))
-		out = json.dumps(protobuf_to_dict(m))
+		out = MessageToJson(m)
 		print(separator+str(out))
 		if not separator:
 			separator = ', '
