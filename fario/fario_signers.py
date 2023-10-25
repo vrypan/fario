@@ -100,6 +100,7 @@ def signer_sign(args):
             msg_signature = signer.sign(msg_hash).signature
             m.signer=signer_pub_key
             m.signature=msg_signature
+            m.hash = msg_hash
             m.data_bytes = data_serialized
             out = base64.b64encode(m.SerializeToString()).decode('ascii')
             print(out)
