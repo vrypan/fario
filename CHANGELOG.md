@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0] - 2023-10-26
+- new option `fario-signers hash --keep-hash`
+- breaking change: all options with underscores have been converted to dashes:
+ex.: `--with_fnames` --> `--with-fnames`
+- New command: `fario-account`. Still ugly, but works.
+- six is no longer a requirement
+
+
 ## [0.5.3] - 2023-10-25
 - Removed protobuf_to_dict/.
 - fario2json uses google.protobuf.json_format now.
