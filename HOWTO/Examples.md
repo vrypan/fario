@@ -75,7 +75,7 @@ fario-out --casts $(fario-fid-byname vrypan.eth) | \
 ## Users that followed me, per month
 
 ```
-fario-out --inlinks $(fario-fid-byname vrypan.eth) | \                                                                                                                                                                git:main*
+fario-out --inlinks $(fario-fid-byname vrypan.eth) | \
 fario2json | \
 jq '.[].data.timestamp' | \
 sort -r | \
