@@ -14,25 +14,29 @@ often also called "seed phrase" or "mnemonic".
 2. The *app*. This is the application (or any other Farcaster account),
 identified by `app_fid` and the corresponding private key `app_key` (just like the user account).
 
-You can either set these values in your `.env` file, or pass them as
-parameters to the commands we will use later. To make this guide more
-eligible, I will assume that you have set these values in `.env`.
+You can either set these values in `~/.fario` (will work with homebrew installations), 
+in `.env` or pass them as parameters to the commands we will use later. To make this guide more
+eligible, I will assume that you have set these values in `~/.fario`.
+
+It is easy to generate a `.fario` template by running `fario-config make`.
 
 You will also need to [configure a hub](How_to_get_access_to_a_hub.md) and an
 Ethereum provider such as alchemy or infura.
 
 ```
-# your .env file will look like this
+# your ~/.fario file will look like this
 
-FARCASTER_HUB="IP:port"
+hub="IP:PORT"
+user_fid=280 # this is my own account, @vrypan.eth
+user_key="<set user's private key here>"
+app_fid=20396 # this is @fc1, my test app.
+app_key="<set app's private key here>"
+op_eth_provider="https://opt-mainnet.g.alchemy.com/v2/........"
 
-OP_ETH_PROVIDER="https://opt-mainnet.g.alchemy.com/v2/........"
+# since we will be creating a new signer, leave this blank to make the
+# exxamples more clear.
+signer="" 
 
-APP_FID=20396 # this is @fc1, my test app.
-APP_PRIVATE_KEY="<set app's private key here>"
-
-USER_FID=280 # this is my own account, @vrypan.eth
-USER_PRIVATE_KEY="<set user's private key here>"
 ```
 
 ## Create a Signer
@@ -88,7 +92,7 @@ OK: The last line contains our Signer public key.
 
 Now, **ANYONE** who holds the Signer private key can cast on behalf of my account, @vrypan.eth.
 
-`fario-cast --key=$SIGNER_KEY --fid=280 "Hello world"`
+`fario-cast --key=$SIGNER_KEY --user-fid=280 "Hello world"`
 
 I waited a few seconds, and refreshed my profile:
 
@@ -111,7 +115,7 @@ You can see the transaction [here](https://optimistic.etherscan.io/tx/0xb48a5ad9
 Let's try to use the Signer again.
 
 ```
-fario-cast --key=$SIGNER_KEY --fid=280 "Hello world" 
+fario-cast --key=$SIGNER_KEY --user-fid=280 "Hello world" 
 
 Traceback (most recent call last):
   File "/Users/vrypan/Devel/far/venv/bin/fario-cast", line 8, in <module>
