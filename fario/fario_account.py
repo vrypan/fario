@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import sys
 from datetime import datetime
 from dotenv import load_dotenv
 from farcaster.HubService import HubService
@@ -16,7 +17,7 @@ def get_hub_address(args) -> str:
     hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
 
     if not hub_address:
-        print("Error: [fario-account] No hub address. Use --hub of set FARCASTER_HUB in .env.", file=sys.stderr)
+        print("Error: [fario-account] No hub address. Use --hub of set FARCASTER_HUB in .env", file=sys.stderr)
         sys.exit(1)
     return hub_address
 

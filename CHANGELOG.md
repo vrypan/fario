@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.6.1] - 2023-10-28
+- Bug fix in fario_account.py
+
 ## [0.6.0] - 2023-10-26
 - new option `fario-signers hash --keep-hash`
 - breaking change: all options with underscores have been converted to dashes:
