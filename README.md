@@ -4,6 +4,34 @@ Farcaster command-line tools.
 
 **Warning: These scripts have not been tested extensively. Use them at your own risk!**
 
+# Installation
+
+## Using Homebrew (macOS)
+
+`fario` is still a "tap" (a third-party repository). This means that installing it **will
+compile everything** and it will take some time, depending on your computer.
+
+That said, you can try:
+
+- `brew tap vrypan/fario` to configure the tap.
+- `brew install fario` to install.
+
+## Using pip (python)
+
+`pip install fario`
+
+(Any help packaging these scripts as a brew recipe, apt package, etc., will be appreciated!)
+
+Commands: `fario-out`, `fario-in`, `fario-signers`, `fario-cast`, `fario-config`, `fario2json`, `json2fario`, `fario-id-byname`, `fario-account`.
+
+Most of these command will require you to have access to a Farcaster hub: [How to get access to a hub](HOWTO/How_to_get_access_to_a_hub.md).
+
+## After installing
+
+Most of the commands need a number of parameters (such as keys, fids, endpoints, etc.) and typing them again
+and agian is taxing. Run `fario-config make` to create a configuration. Save it to `~/.fario` and add the
+values you don't want to type every time.
+
 ## Teaser
 
 `fario` has become quite powerful. Using with other cli tools available on a unix system, you can do things like this just using your terminal and a farcaster hub.
@@ -37,16 +65,6 @@ Farcaster command-line tools.
 ```
 
 Visit the [HOWTO folder](HOWTO/) to learn more.
-
-# Installation
-
-`pip install fario`
-
-(Any help packaging these scripts as a brew recipe, apt package, etc., will be appreciated!)
-
-Commands: `fario-out`, `fario-in`, `fario-signers`, `fario-cast`, `fario-config`, `fario2json`, `json2fario`, `fario-id-byname`, `fario-account`.
-
-Most of these command will require you to have access to a Farcaster hub: [How to get access to a hub](HOWTO/How_to_get_access_to_a_hub.md).
 
 # Data format
 Most of the scripts bellow pipe farcaster `Message` objects in and/or out. To make the payload command-line friendly, we serialize it and encode it using base64. So where "`far` data" is mentioned bellow, this is a protobuf Message converted like this: `base64(serialize(Message))`.
