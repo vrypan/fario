@@ -2,7 +2,7 @@
 import os
 import sys
 from datetime import datetime
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from farcaster.HubService import HubService
 from farcaster.fcproto.message_pb2 import SignatureScheme, HashScheme, Embed
 from farcaster.fcproto.onchain_event_pb2 import OnChainEventType, OnChainEvent
@@ -10,12 +10,17 @@ from farcaster.fcproto.request_response_pb2 import StoreType
 from farcaster import FARCASTER_EPOCH
 from farcaster import Message
 from . __about__ import version
+from . import utils
 
 import argparse
-def get_hub_address(args) -> str:
-    load_dotenv()
-    hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
 
+CONF = {}
+
+def get_hub_address(args) -> str:
+    #load_dotenv()
+    #hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
+    # conf = utils.get_conf(args)
+    hub_address = CONF['hub_address']
     if not hub_address:
         print("Error: [fario-account] No hub address. Use --hub of set FARCASTER_HUB in .env", file=sys.stderr)
         sys.exit(1)
@@ -184,6 +189,8 @@ def main():
     cmd_addr_by_name.set_defaults(func=by_name)
 
     args = parser.parse_args()
+
+    CONF.update(utils.get_conf(args))
 
     if 'func' in args:
         args.func(args)
