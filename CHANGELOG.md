@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.7.0] - 2023-10-28
+- all commands use config.get_config() to read configuration
+- configuration can be environment, .env and (new) ~/.fario
+- new command fario-config. Prints current config or outputs
+sample config.
+- some command parameters have changed names to get unified 
+options naming between commands.
+- merged json2fario
+- numerous bug fixes, probably new bugs introduced :-)
+
 ## [0.6.1] - 2023-10-28
 - Bug fix in fario_account.py
 

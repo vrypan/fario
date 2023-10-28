@@ -4,29 +4,21 @@ import os
 import sys
 import datetime
 import base64
-from dotenv import load_dotenv
 from farcaster.Signer import Signer, removeSigner
 from nacl.signing import SigningKey
 from blake3 import blake3
 from farcaster.fcproto.message_pb2 import HashScheme, Message, MessageData
+from . config import get_conf
 
 import argparse
 from . __about__ import version
 
 def signer_add(args):
-    load_dotenv()
-    provider = args.provider if args.provider else os.getenv("OP_ETH_PROVIDER")
-    user_fid = args.user_fid if args.user_fid else os.getenv("USER_FID")
-    user_key = args.user_key if args.user_key else os.getenv("USER_PRIVATE_KEY")
-    app_fid = args.app_fid if args.app_fid else os.getenv("APP_FID")
-    app_key = args.app_key if args.app_key else os.getenv("APP_PRIVATE_KEY")
-
-    if not (provider and user_fid and user_key and app_fid and app_key):
-        if not args.raw:
-            print('Error: [fario-signers] Missing parameters. Either define them in .env or as an option.', file=sys.stderr)
-        sys.exit(1)
-
-    s = Signer( provider, int(user_fid), user_key, int(app_fid), app_key )
+    conf = get_conf(
+        required = ['op_eth_provider', 'user_fid', 'user_key', 'app_fid', 'app_key'],
+        args = args
+        )
+    s = Signer( conf['provider'], int(conf['user_fid']), conf['user_key'], int(conf['app_fid']), conf['app_key'] )
 
     tx_hash = s.approve_signer()
     signer_private_key = s.key
@@ -35,25 +27,23 @@ def signer_add(args):
     if not args.raw:
         print(f"=== New Signer approved =====================")
         print(f"Tx: {tx_hash}")
-        print(f"User Fid: {user_fid}")
-        print(f"App Fid: {app_fid}")
+        print(f"User Fid: {conf['user_fid']}")
+        print(f"App Fid: {conf['app_fid']}")
         print(f"Signer public key: 0x{s.signer_pub().hex()}")
         print(f"Signer private key: {s.key.hex()}")
         print(f"=== MAKE SURE YOU SAVE THE PRIVATE KEY!!! ===")
     else:
-        print(f"{tx_hash}\t{user_fid}\t{app_fid}\t0x{s.signer_pub().hex()}\t{s.key.hex()}" )
+        print(f"{tx_hash}\t{conf['user_fid']}\t{conf['app_fid']}\t0x{s.signer_pub().hex()}\t{s.key.hex()}" )
 
 def signer_revoke(args):
-    load_dotenv()
+    conf = get_conf(
+        required = ['op_eth_provider', 'user_key'],
+        args = args
+        )
 
-    provider = args.provider if args.provider else os.getenv("OP_ETH_PROVIDER")
-    user_key = args.user_key if args.user_key else os.getenv("USER_PRIVATE_KEY")
+    provider = conf['op_eth_provider']
+    user_key = conf['user_key']
 
-    if not (provider and user_key and args.signer):
-        if not args.raw:
-            print('Error: [fario-signers] Missing parameters. Either define them in .env or as an option.', file=sys.stderr)
-        sys.exit(1)
-        
     tx = removeSigner(provider, user_key, args.signer)
     if not args.raw:
         print(f"Signer {args.signer} removed. Tx={tx}")
@@ -61,12 +51,12 @@ def signer_revoke(args):
         print(tx)
 
 def signer_list(args):
-    load_dotenv()
-    hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
+    conf = get_conf(
+        required = ['hub'],
+        args = args
+        )
+    hub_address = conf['hub']
 
-    if not hub_address:
-        print("Error: [fario-signers] No hub address. Use --hub of set FARCASTER_HUB in .env.", file=sys.stderr)
-        sys.exit(1)
     from farcaster.HubService import HubService
     hub = HubService(hub_address, use_async=False)
     r = hub.GetOnChainSignersByFid(args.fid)
@@ -89,7 +79,12 @@ def signer_list(args):
             print(f"{s['pub_key']}\t{s['timestamp']}\t{s['signer_fid']}")
 
 def signer_sign(args):
-    signer=SigningKey(bytes.fromhex(args.key[2:]))
+    conf = get_conf(
+        required = ['signer'],
+        args = args
+    )
+
+    signer=SigningKey(bytes.fromhex(conf['signer'][2:]))
     signer_pub_key=signer.verify_key.encode()
 
     for line in sys.stdin:
@@ -101,7 +96,7 @@ def signer_sign(args):
             m.signer=signer_pub_key
             m.signature=msg_signature
             if msg_hash != m.hash:
-                if args.keep_hash:
+                if args.keep_hash == True:
                     print("Error: [fario-signers] New message hash != old message hash, but --keep-hash=True.",
                         file=sys.stderr)
                     sys.exit(1)
@@ -133,7 +128,7 @@ def main():
 
     cmd_signer_remove = subparser.add_parser("remove", description="""Remove a signer.
         Using --raw will output only the tx_hash.""")
-    cmd_signer_remove.add_argument("--provider", help="OP Eth provider endpoint")
+    cmd_signer_remove.add_argument("--op_eth_provider", help="OP Eth provider endpoint")
     cmd_signer_remove.add_argument("--user-key", help="User's private key in hex.")
     cmd_signer_remove.add_argument("signer", help="Signer's public key in hex.")
     cmd_signer_remove.set_defaults(func=signer_revoke)
@@ -144,9 +139,11 @@ def main():
     cmd_signer_list.add_argument("fid", type=int, help="Signers for <FID>")
     cmd_signer_list.set_defaults(func=signer_list)
 
-    cmd_signer_sign = subparser.add_parser("sign", description="Sign (or re-sign) messages uing a new signer.")
-    cmd_signer_sign.add_argument("key", type=str, help="Signer's private key")
-    cmd_signer_sign.add_argument('--keep-hash', default="False", action='store_true', help="Do not change the message hash.")
+    cmd_signer_sign = subparser.add_parser("sign", 
+        description="Read messages and sign (or re-sign) using a new signer.\n"
+        "Reads from stdin, writes to stdout. In and out are in fario format.")
+    cmd_signer_sign.add_argument("--signer", type=str, help="Signer's private key")
+    cmd_signer_sign.add_argument('--keep-hash', default="false", action='store_true', help="Do not change the message hash.")
     cmd_signer_sign.set_defaults(func=signer_sign)    
 
     args = parser.parse_args()

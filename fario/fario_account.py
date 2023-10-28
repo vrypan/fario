@@ -10,20 +10,15 @@ from farcaster.fcproto.request_response_pb2 import StoreType
 from farcaster import FARCASTER_EPOCH
 from farcaster import Message
 from . __about__ import version
-from . import utils
+from . config import get_conf, check_conf
 
 import argparse
 
 CONF = {}
 
 def get_hub_address(args) -> str:
-    #load_dotenv()
-    #hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
-    # conf = utils.get_conf(args)
-    hub_address = CONF['hub_address']
-    if not hub_address:
-        print("Error: [fario-account] No hub address. Use --hub of set FARCASTER_HUB in .env", file=sys.stderr)
-        sys.exit(1)
+    check_conf(CONF, ['hub'])
+    hub_address = CONF['hub']
     return hub_address
 
 def get_usage(fid, args):
@@ -190,7 +185,7 @@ def main():
 
     args = parser.parse_args()
 
-    CONF.update(utils.get_conf(args))
+    CONF.update(get_conf(args))
 
     if 'func' in args:
         args.func(args)

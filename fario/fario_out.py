@@ -5,9 +5,10 @@ from time import sleep
 from dotenv import load_dotenv
 from farcaster.HubService import HubService
 from farcaster.fcproto.message_pb2 import MessageType, Message
-
 import base64
 import argparse
+from . config import get_conf
+from . __about__ import version
 
 def get_data(method, fid, page_size, limit, wait):
 	first_run=True
@@ -43,7 +44,8 @@ def get_reactions(method, fid, reaction_type, page_size, limit, wait):
 
 def main():		
 	parser = argparse.ArgumentParser(prog="fario-out", description="Export Farcaster data.")
-	parser.add_argument("fid", type=int, help="FID")
+	parser.add_argument('--version', action='version', version='%(prog)s v'+version)
+	parser.add_argument("fid", type=int, help="Export messages from fid=FID")
 	parser.add_argument("--casts", help="User casts", action="store_true")
 	parser.add_argument("--links", help="User links", action="store_true")
 	parser.add_argument("--recasts", help="User recasts", action="store_true")
@@ -56,14 +58,9 @@ def main():
 	parser.add_argument("--wait", type=int, help="Wait for <WAIT> milliseconds between reads.", default=0)
 	args = parser.parse_args()
 
-	load_dotenv()
-	hub_address = args.hub if args.hub else os.getenv("FARCASTER_HUB")
+	conf = get_conf(required=['hub'], args=args)
 
-	if not hub_address:
-		print("No hub address. Use --hub of set FARCASTER_HUB in .env.")
-		sys.exit(1)
-
-	hub = HubService(hub_address, use_async=False)
+	hub = HubService(conf['hub'], use_async=False)
 
 	if args.casts or args.all:
 		for c in get_data(hub.GetCastsByFid, args.fid, 100, args.limit, args.wait):

@@ -23,6 +23,7 @@ fario-signers="fario.fario_signers:main"
 fario-account="fario.fario_account:main"
 fario2json="fario.fario2json:main"
 json2fario="fario.json2fario:json2fario"
+fario-config="fario.config:cmd_conf"
 
 [tool.setuptools.packages]
 find = {}
