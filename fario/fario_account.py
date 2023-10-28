@@ -185,7 +185,7 @@ def main():
 
     args = parser.parse_args()
 
-    CONF.update(get_conf(args))
+    CONF.update(get_conf(args=args))
 
     if 'func' in args:
         args.func(args)
