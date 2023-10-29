@@ -18,7 +18,7 @@ def signer_add(args):
         required = ['op_eth_provider', 'user_fid', 'user_key', 'app_fid', 'app_key'],
         args = args
         )
-    s = Signer( conf['provider'], int(conf['user_fid']), conf['user_key'], int(conf['app_fid']), conf['app_key'] )
+    s = Signer( conf['op_eth_provider'], int(conf['user_fid']), conf['user_key'], int(conf['app_fid']), conf['app_key'] )
 
     tx_hash = s.approve_signer()
     signer_private_key = s.key
