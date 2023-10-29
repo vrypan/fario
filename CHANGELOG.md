@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.1] - 2023-10-28
+- Fixed a bug with fario-signers
+
 ## [0.7.0] - 2023-10-28
 - all commands use config.get_config() to read configuration
 - configuration can be environment, .env and (new) ~/.fario
