@@ -3,6 +3,7 @@ import os
 import sys
 from datetime import datetime
 #from dotenv import load_dotenv
+from eth_account import Account
 from farcaster.HubService import HubService
 from farcaster.fcproto.message_pb2 import SignatureScheme, HashScheme, Embed
 from farcaster.fcproto.onchain_event_pb2 import OnChainEventType, OnChainEvent
@@ -159,6 +160,23 @@ def by_name(args):
     fid = ret.fid
     by_fid(args, fid)
 
+def from_secret(args):
+    print(  "=== DANGER!!! ===")
+    print(  "Revealing your secret phrase (seed or mnemonic) to someone, gives\n"
+            "them full control over your Farcaster account, including the ability\n"
+            "to move your fid to an other wallet!\n\n"
+            "This script will calculate your privet key using your secret phrase.\n"
+            "This script runs locally and does not send ANY data to any third party.\n\n"
+            "Do your own research before trusting anyone with your account's key\n"
+            "or mnemonic. This includes this script too.\n\n"
+    )
+    seed = input("Enter secret phrase: ")
+    if seed.strip():
+        Account.enable_unaudited_hdwallet_features()
+        acc = Account.from_mnemonic(seed)
+        print("Account key:".ljust(15), acc.key.hex())
+        print("Account addr:".ljust(15), f"0x{acc.address}")
+    
 def main():
     parser = argparse.ArgumentParser(prog='fario-account')
     parser.add_argument('--version', action='version', version='%(prog)s v'+version)
@@ -182,6 +200,9 @@ def main():
     cmd_addr_by_name = subparser.add_parser("byname", description="Get account info using name or fname")
     cmd_addr_by_name.add_argument("name", type=str, help="User's name.")
     cmd_addr_by_name.set_defaults(func=by_name)
+
+    cmd_addr_from_secret = subparser.add_parser("fromsecret", description="Get account details using the secret seed phrase.")
+    cmd_addr_from_secret.set_defaults(func=from_secret)
 
     args = parser.parse_args()
 

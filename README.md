@@ -261,7 +261,7 @@ Displays detailed information about an fid.
 usage: fario-account [-h] [--version] [--raw] [--hub HUB] [--fid] [--fname] [--name] [--addr] [--storage-rent] [--storage-limits] [--storage-usage] [--recovery] [--all] {byfid,byname} ...
 
 positional arguments:
-  {byfid,byname}
+  {byfid,byname,fromsecret}
 
 options:
   -h, --help        show this help message and exit
@@ -313,6 +313,34 @@ recasts         2001
 user_data       4
 proofs          3
 verifications   4
+```
+
+## fario-account fromsecret
+
+`fario-account fromsecret` will ask for your secret phrase ("seed", "mnemonic") and will calculate
+your custody wallet private key.
+
+Unlike other commands in `fario`, this command DOES NOT read from stdin, but will prompt the user.
+This is done on purpose to avoid leaving traces of your seed phrase in shell history, and also to
+discourage using this command as part of automated flows where the user is expected to use their
+seed phrase.
+
+```
+$ fario-account fromsecret 
+
+=== DANGER!!! ===
+Revealing your secret phrase (seed or mnemonic) to someone, gives
+them full control over your Farcaster account, including the ability
+to move your fid to an other wallet!
+
+This script will calculate your privet key using your secret phrase.
+This script runs locally and does not send ANY data to any third party.
+
+Do your own research before trusting anyone with your account's key
+or mnemonic. This includes this script too.
+
+
+Enter secret phrase:
 ```
 
 # Other commands

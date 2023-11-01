@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.2] - 
+- fario-account fromsecret
+
 ## [0.7.1] - 2023-10-28
 - Fixed a bug with fario-signers
 
