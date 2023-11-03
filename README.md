@@ -68,7 +68,7 @@ Visit the [HOWTO folder](HOWTO/) to learn more.
 
 # Data format
 Most of the scripts bellow pipe farcaster `Message` objects in and/or out. To make the payload command-line friendly, we serialize it and encode it using base64. So where "`far` data" is mentioned bellow, this is a protobuf Message converted like this: `base64(serialize(Message))`.
-See: [Working with "far"-encoded data](Working_with_far_data_encoding).
+See: [Working with "far"-encoded data](HOWTO/Working_with_far_data_encoding).
 
 # fario-out
 
