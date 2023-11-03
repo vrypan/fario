@@ -66,7 +66,7 @@ def main():
 		for c in get_data(hub.GetCastsByFid, args.fid, 100, args.limit, args.wait):
 			print(c)
 	if args.links or args.all:
-		for c in get_data(hub.GetLinksByTarget, args.fid, 100, args.limit, args.wait):
+		for c in get_data(hub.GetLinksByFid, args.fid, 100, args.limit, args.wait):
 			print(c)
 	if args.likes or args.all:
 		for c in get_reactions(hub.GetReactionsByFid, args.fid, 1, 100, args.limit, args.wait):
