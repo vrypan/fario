@@ -21,9 +21,11 @@ fario-in="fario.fario_in:main"
 fario-out="fario.fario_out:main"
 fario-signers="fario.fario_signers:main"
 fario-account="fario.fario_account:main"
+fario-grep="fario.fario_grep:main"
 fario2json="fario.fario2json:main"
 json2fario="fario.json2fario:json2fario"
 fario-config="fario.config:cmd_conf"
+fario-hubinfo="fario.fario_hub_info:get_hub_info"
 
 [tool.setuptools.packages]
 find = {}

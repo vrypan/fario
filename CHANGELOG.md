@@ -1,7 +1,9 @@
 # Changelog
 
-## [0.7.2] - 
-- fario-account fromsecret
+## [0.7.2] - 2023-11-03
+- New sub-command `fario-account fromsecret`
+- New command `fario-grep`
+- New command `fario-hubinfo`
 
 ## [0.7.1] - 2023-10-28
 - Fixed a bug with fario-signers
