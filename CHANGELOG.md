@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.3] - 2023-11-10
+- Fixed a bug with `fario-out --links`
+- New option `fario-grep --not-signer` 
+
 ## [0.7.2] - 2023-11-03
 - New sub-command `fario-account fromsecret`
 - New command `fario-grep`
