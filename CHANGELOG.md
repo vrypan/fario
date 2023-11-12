@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.4] - 2023-11-12
+- Requires farcaster-py==0.0.7 (Supports FIP-10 changes)
+
 ## [0.7.3] - 2023-11-10
 - Fixed a bug with `fario-out --links`
 - New option `fario-grep --not-signer` 

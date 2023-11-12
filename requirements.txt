@@ -1,3 +1,3 @@
-farcaster-py==0.0.6
+farcaster-py==0.0.7
 blake3
 pynacl
