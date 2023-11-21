@@ -18,7 +18,7 @@ def main():
 
 	conf = get_conf(required=['hub'], args=args)
 
-	hub = HubService(conf['hub'], use_async=False, conf['ssl'])
+	hub = HubService(conf['hub'], use_async=False, use_ssl=conf['ssl'])
 	ret  = hub.GetUsernameProof(args.username)
 
 	if args.verbose:
