@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.6] - 2023-11-21
+- Requires farcaster-py==0.0.9 (hub-monorepo 1.8.0)
+
 ## [0.7.5] - 2023-11-21
 - Requires farcaster-py==0.0.8 (SSL support)
 - Updated commands that connect to hubs with a `--ssl` option
