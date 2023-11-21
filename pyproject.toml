@@ -26,6 +26,7 @@ fario2json="fario.fario2json:main"
 json2fario="fario.json2fario:json2fario"
 fario-config="fario.config:cmd_conf"
 fario-hubinfo="fario.fario_hub_info:get_hub_info"
+fario-pprint="fario.fario_pprint:main"
 
 [tool.setuptools.packages]
 find = {}
