@@ -11,6 +11,7 @@ def main():
 	parser = argparse.ArgumentParser(prog="fario-cast", description="Send a cast from the command line.")
 	parser.add_argument('--version', action='version', version='%(prog)s v'+version)
 	parser.add_argument("--hub", help="Use the hub at <ADDRESS>. Ex. --hub 192.168.1.1:2283", type=str)
+	parser.add_argument("--ssl", help="Use SSL", action="store_true")
 	parser.add_argument("--signer", type=str, help="Signer's private key")
 	parser.add_argument("--user-fid", type=int, help="User's fid")
 	parser.add_argument("--timestamp", type=int, help="Cast date (unix timestamp)")
@@ -30,7 +31,7 @@ def main():
 	if args.embed and len(args.embed) > 2:
 		print("Error: More than 2 embeds.")
 		sys.exit(1)
-	hub = HubService(conf['hub'], use_async=False)
+	hub = HubService(conf['hub'], use_async=False, use_ssl=conf['ssl'])
 
 	message_builder = Message.MessageBuilder(
 		HashScheme.HASH_SCHEME_BLAKE3, 

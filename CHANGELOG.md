@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.7.5] - 2023-11-21
+- Requires farcaster-py==0.0.8 (SSL support)
+- Updated commands that connect to hubs with a `--ssl` option
+- `ssl=True` can also be defined in `.env` or `~/.fario`
+
 ## [0.7.4] - 2023-11-12
 - Requires farcaster-py==0.0.7 (Supports FIP-10 changes)
 

@@ -13,7 +13,7 @@ def get_conf(required=[], args=None) -> str:
 
     conf = {}
     params = ( 
-        'hub', 'user_fid', 'user_key', 'app_fid', 'app_key', 'signer', 'op_eth_provider'
+        'hub', 'user_fid', 'user_key', 'app_fid', 'app_key', 'signer', 'op_eth_provider', 'ssl'
     )
     for p in params:
         conf[p] = os.getenv(p,'')

@@ -11,13 +11,14 @@ def main():
 	parser = argparse.ArgumentParser(prog="fario-fid-byname", description="Get a user's fid")
 	parser.add_argument('--version', action='version', version='%(prog)s v'+version)
 	parser.add_argument("--hub", help="Use the hub at <ADDRESS>. Ex. --hub 192.168.1.1:2283", type=str)
+	parser.add_argument("--ssl", help="Use SSL", action="store_true")
 	parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
 	parser.add_argument("username", type=str, help="Cast text")
 	args = parser.parse_args()
 
 	conf = get_conf(required=['hub'], args=args)
 
-	hub = HubService(conf['hub'], use_async=False)
+	hub = HubService(conf['hub'], use_async=False, conf['ssl'])
 	ret  = hub.GetUsernameProof(args.username)
 
 	if args.verbose:

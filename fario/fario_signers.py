@@ -58,7 +58,7 @@ def signer_list(args):
     hub_address = conf['hub']
 
     from farcaster.HubService import HubService
-    hub = HubService(hub_address, use_async=False)
+    hub = HubService(hub_address, use_async=False, use_ssl=conf['ssl'])
     r = hub.GetOnChainSignersByFid(args.fid)
     signers = []
     fid_to_name = {}
@@ -135,6 +135,7 @@ def main():
 
     cmd_signer_list = subparser.add_parser("list", description="list signers")
     cmd_signer_list.add_argument("--hub", help="Use the hub at <HUB>. Ex. --hub 192.168.1.1:2283", type=str)
+    cmd_signer_list.add_argument("--ssl", help="Use SSL", action="store_true")
     cmd_signer_list.add_argument('--with-fnames', action='store_true', help="Display the fname of the Signer owner.")
     cmd_signer_list.add_argument("fid", type=int, help="Signers for <FID>")
     cmd_signer_list.set_defaults(func=signer_list)
