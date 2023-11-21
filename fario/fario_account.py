@@ -35,7 +35,7 @@ def get_usage(fid, args):
         else:
             return c
     hub_address = get_hub_address(args)
-    hub = HubService(hub_address, use_async=False)
+    hub = HubService(hub_address, use_async=False, CONF['ssl'])
     usage = (
         ('casts', hub.GetCastsByFid, {"fid":fid, "page_size":1000} ),
         ('links', hub.GetLinksByFid, {"fid":fid, "page_size":1000} ),
@@ -52,13 +52,13 @@ def get_usage(fid, args):
 
 def get_names_by_fid(args, fid):
     hub_address = get_hub_address(args)
-    hub = HubService(hub_address, use_async=False)
+    hub = HubService(hub_address, use_async=False, CONF['ssl'])
     ret  = hub.GetUserNameProofsByFid(fid, page_size=None)
     return [ (m.name.decode('ascii'), '0x'+m.owner.hex()) for m in ret.proofs ]
 
 def get_addr_by_fid(args, fid):
     hub_address = get_hub_address(args)
-    hub = HubService(hub_address, use_async=False)
+    hub = HubService(hub_address, use_async=False, CONF['ssl'])
     ret  = hub.GetIdRegistryOnChainEvent(fid)
     return (
         ret.id_register_event_body.to.hex(), 
@@ -67,7 +67,7 @@ def get_addr_by_fid(args, fid):
 def get_storage_rent_by_fid(args, fid):
     storage=[]
     hub_address = get_hub_address(args)
-    hub = HubService(hub_address, use_async=False)
+    hub = HubService(hub_address, use_async=False, CONF['ssl'])
     ret  = hub.GetOnChainEvents(fid=fid, event_type=4, page_size=None)
     return [
         (e.storage_rent_event_body.units,
@@ -78,7 +78,7 @@ def get_storage_rent_by_fid(args, fid):
     
 def get_storage_limits_by_fid(args, fid):
     hub_address = get_hub_address(args)
-    hub = HubService(hub_address, use_async=False)
+    hub = HubService(hub_address, use_async=False, CONF['ssl'])
     ret  = hub.GetCurrentStorageLimitsByFid(fid)
     limits = { StoreType.Name(l.store_type)[11:].lower(): l.limit for l in ret.limits }
     return (limits)
@@ -155,7 +155,7 @@ def by_fid(args, fid=None):
 
 def by_name(args):
     hub_address = get_hub_address(args)
-    hub = HubService(hub_address, use_async=False)
+    hub = HubService(hub_address, use_async=False, CONF['ssl'])
     ret  = hub.GetUsernameProof(args.name)
     fid = ret.fid
     by_fid(args, fid)
@@ -182,6 +182,7 @@ def main():
     parser.add_argument('--version', action='version', version='%(prog)s v'+version)
     parser.add_argument('--raw', action='store_true', help="Output raw values, tab separated.")
     parser.add_argument("--hub", help="Use the hub at <HUB>. Ex. --hub 192.168.1.1:2283", type=str)
+    parser.add_argument("--ssl", help="Use SSL", action="store_true")
     parser.add_argument("--fid", action='store_true', help="Print fid")
     parser.add_argument("--fname", action='store_true', help="Print fname")
     parser.add_argument("--name", action='store_true', help="Print name")

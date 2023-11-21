@@ -55,12 +55,13 @@ def main():
 	parser.add_argument("--all", help="Equivalent to --casts --links --recasts --likes --profile", action="store_true")
 	parser.add_argument("--limit", type=int, help="Number of records. If more than one types of data are exported, the limit applies to each one separately.", default=sys.maxsize)
 	parser.add_argument("--hub", help="Use the hub at <HUB>. Ex. --hub 192.168.1.1:2283", type=str)
+	parser.add_argument("--ssl", help="Use SSL", action="store_true")
 	parser.add_argument("--wait", type=int, help="Wait for <WAIT> milliseconds between reads.", default=0)
 	args = parser.parse_args()
 
 	conf = get_conf(required=['hub'], args=args)
 
-	hub = HubService(conf['hub'], use_async=False)
+	hub = HubService(conf['hub'], use_async=False, use_ssl=conf['ssl'])
 
 	if args.casts or args.all:
 		for c in get_data(hub.GetCastsByFid, args.fid, 100, args.limit, args.wait):
