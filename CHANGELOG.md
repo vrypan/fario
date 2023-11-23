@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.8] - 2023-11-23
+- `fario-signers list --with-fnames` will not break if no
+UserNameProofs are found.
+
 ## [0.7.6] - 2023-11-21
 - Requires farcaster-py==0.0.9 (hub-monorepo 1.8.0)
 
