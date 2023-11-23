@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.7] - 2023-11-21
+- Bug fixes
+
 ## [0.7.6] - 2023-11-21
 - Requires farcaster-py==0.0.9 (hub-monorepo 1.8.0)
 

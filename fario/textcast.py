@@ -75,6 +75,16 @@ class Proxy:
             """)
         self.db_cur.execute("CREATE UNIQUE INDEX fname_idx ON users(fname)")
         self.db_cur.execute("CREATE UNIQUE INDEX name_idx ON users(name)")
+
+        self.db_cur.execute("""
+            CREATE TABLE IF NOT EXISTS user_data(
+                fid INTEGER,
+                data_type INTEGER,
+                value TEXT,
+                upd_ts INTEGER,
+                primary key(fid,data_type))
+            """)
+
         self.db_cur.execute("""
             CREATE TABLE IF NOT EXISTS casts(
                 fid INTEGER,
@@ -134,6 +144,25 @@ class Proxy:
             return user['fname']
         else:
             return str(fid)
+    def hdb_get_user_data(self, fid, user_data_type):
+        ts = int(datetime.now().timestamp())
+        self.db_cur.execute("SELECT * FROM user_data WHERE fid=? AND data_type=? AND upd_ts>?", (fid,user_data_type,ts-(self.TTL*10)))
+        r = self.db_cur.fetchone()
+        if r:
+            return(r['value'])
+        else:
+            msg = self.hub.GetUserData(fid, user_data_type)
+            if not msg:
+                value = None
+            else:
+                value = msg.data.user_data_body.value
+            self.db_cur.execute(
+                "INSERT OR REPLACE INTO user_data(fid,data_type,value,upd_ts) VALUES(?,?,?,?)",
+                (fid, user_data_type, value, ts)
+            )
+            self.db_conn.commit()
+            return value
+
     def pp_date(self, t: int) -> str:
         ret = '(' + datetime.fromtimestamp(t+FARCASTER_EPOCH).strftime('%Y-%m-%d %H:%M:%S') + ')'
         return colored( ret, 'light_grey')
@@ -214,6 +243,35 @@ class Proxy:
         )
         self.db_conn.commit()
 
+    def hdb_get_reactions_by_fid(self, fid:int, reaction_type: int):
+        username = self.get_username_by_fid(fid)
+        out = ''
+        messages = self.hub.GetReactionsByFid(fid, reaction_type, 100)
+        #print(messages)
+        heart = colored("❤", "red", attrs=["bold"])
+        recast = colored("♺", "green", attrs=["bold"])
+        for r in messages.messages:
+            #print(r.data.reaction_body.type)
+            if r.data.reaction_body.type == 1: #like
+                dt = datetime.fromtimestamp(r.data.timestamp+FARCASTER_EPOCH).strftime('%Y-%m-%d %H:%M:%S')
+                if r.data.reaction_body.target_cast_id.fid: # CastId
+                    cast_id = self.pp_cast_id(
+                        r.data.reaction_body.target_cast_id.fid,
+                        r.data.reaction_body.target_cast_id.hash.hex()
+                        )
+                    desc = f"liked {cast_id}"
+                out = f'{dt} {heart} {desc} \n' + out
+            if r.data.reaction_body.type == 2: #recast
+                dt = datetime.fromtimestamp(r.data.timestamp+FARCASTER_EPOCH).strftime('%Y-%m-%d %H:%M:%S')
+                if r.data.reaction_body.target_cast_id.fid: # CastId
+                    cast_id = self.pp_cast_id(
+                        r.data.reaction_body.target_cast_id.fid,
+                        r.data.reaction_body.target_cast_id.hash.hex()
+                        )
+                    desc = f"recasted {cast_id}"
+                out = f'{dt} {recast} {desc} \n' + out
+        return out
+
     def hdb_get_reactions_by_cast(self, fid:int, oxhash:str, reaction_type: int):
         self.db_cur.execute("SELECT * FROM reactions WHERE fid=? AND hash=? AND reaction_type=? ORDER BY ts DESC", (fid, oxhash,1))
         r = self.db_cur.fetchone() 
@@ -260,9 +318,22 @@ class Proxy:
     def db_pp_cast_tree(self, fid:int, oxhash:str):
         top_cast = self.h_get_cast_ancestors(fid, oxhash)
         self.h_get_cast_children(top_cast['fid'], top_cast['hash'])
-        self.db_pp_cast_children(top_cast['fid'], top_cast['hash'])
+        return self.db_pp_cast_children(top_cast['fid'], top_cast['hash'])
 
-    def db_pp_cast_children(self, fid:int, oxhash:str, offset=0):
+    def db_pp_cast_children(self, fid:int, oxhash:str, offset=0, out=''):
+        cast = self._get_cast_by_castid(fid, oxhash)
+        out = ''
+        children = self.db_cur.execute("SELECT * FROM casts WHERE parent=?", ( (f"{fid}/{oxhash}",) ))
+        if children:
+            rows = [row for row in children]
+            for row in rows:
+                c = Message()
+                c.ParseFromString(row['msg'])
+                out = out + self.db_pp_cast_children(c.data.fid, '0x'+c.hash.hex(), offset+1, out)
+        out = self.pp_cast(cast, offset) + "\n" + out
+        return out
+
+    def db_pp_cast_children_orig(self, fid:int, oxhash:str, offset=0, out=''):
         cast = self._get_cast_by_castid(fid, oxhash)
         print(self.pp_cast(cast, offset))
         children = self.db_cur.execute("SELECT * FROM casts WHERE parent=?", ( (f"{fid}/{oxhash}",) ))
@@ -271,7 +342,7 @@ class Proxy:
             for row in rows:
                 c = Message()
                 c.ParseFromString(row['msg'])
-                self.db_pp_cast_children(c.data.fid, '0x'+c.hash.hex(), offset+1)
+                self.db_pp_cast_children(c.data.fid, '0x'+c.hash.hex(), offset+1, out)
 
     def get_cast(self, fid:int, hash: str, expand=False, append='', offset=0):
         ret = self._get_cast_by_castid(fid, hash)
@@ -282,14 +353,14 @@ class Proxy:
                 )
         else:
             print(cast_txt)
-        
-if __name__ == '__main__':
+
+def main():
     parser = argparse.ArgumentParser(prog="termcast", description="Terminal-based farcaster client")
     #parser.add_argument("--expand", help="Expand cast threads", action="store_true")
     parser.add_argument("--expand", type=int, default=0, help="Expand thread, level=<EXPAND>")
     parser.add_argument("uri", type=str)
     args = parser.parse_args()
-
+    
     p = Proxy()
 
     uri = re.findall('^@(\w*)(\.eth)?(/\w*)?(/\w*)?$', args.uri)
@@ -306,7 +377,21 @@ if __name__ == '__main__':
     else:
         fid = int(username)
 
-    
+    USER_DATA_TYPE={
+        'pfp':1,
+        'display':2,
+        'bio':3,
+        'url':5,
+        'username':6
+    }
+    if path[1:] in USER_DATA_TYPE:
+        out = p.hdb_get_user_data(fid,USER_DATA_TYPE[path[1:]])
+        print(out)
+        sys.exit(0)
+        # farcaster://<user>/(pfp|bio|url|username|casts|<link_type>)?
+    if path[1:] == 'likes':
+        out = p.hdb_get_reactions_by_fid(fid=fid, reaction_type=None)
+        print(out)
     if path == "/casts": 
         # List all casts
         p.get_casts_by_fid(fid, 20)
@@ -318,10 +403,18 @@ if __name__ == '__main__':
                 p.get_cast(fid, path[1:], args.expand)
                 print()
             else:
-                p.db_pp_cast_tree(fid, path[1:])
+                print( p.db_pp_cast_tree(fid, path[1:]) )
                 print()
+                #from pick import pick
+                #options = p.db_pp_cast_tree(fid, path[1:]).splitlines()
+                #option, index = pick(options)
+                #print(option)
+                #print(index)
         elif path2 == '/likes':
             ret = p.hdb_get_reactions_by_cast(fid, path[1:], 1)
             for r in ret:
                 username = p.get_username_by_fid(r['u_fid'])
                 print(p.pp_fid(username))
+
+if __name__ == '__main__':
+    main()
