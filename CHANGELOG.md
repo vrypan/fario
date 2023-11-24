@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.7.9] - 
+- `fario-account --balance` will show custody addr OP balance.
+
 ## [0.7.8] - 2023-11-23
 - `fario-signers list --with-fnames` will not break if no
 UserNameProofs are found.
