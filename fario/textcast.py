@@ -157,10 +157,10 @@ class Proxy:
             else:
                 value = msg.data.user_data_body.value
             self.db_cur.execute(
-                "INSERT OR REPLACE INTO user_data(fid,data_type,value,upd_ts) VALUES(?,?,?,?)",
+                "REPLACE INTO user_data(fid,data_type,value,upd_ts) VALUES(?,?,?,?)",
                 (fid, user_data_type, value, ts)
             )
-            self.db_conn.commit()
+            self.db_cur.commit()
             return value
 
     def pp_date(self, t: int) -> str:
@@ -243,33 +243,53 @@ class Proxy:
         )
         self.db_conn.commit()
 
-    def hdb_get_reactions_by_fid(self, fid:int, reaction_type: int):
+    def hdb_get_reactions_by_fid(self, fid:int, reaction_type: int, limit=100):
         username = self.get_username_by_fid(fid)
         out = ''
-        messages = self.hub.GetReactionsByFid(fid, reaction_type, 100)
-        #print(messages)
-        heart = colored("❤", "red", attrs=["bold"])
-        recast = colored("♺", "green", attrs=["bold"])
-        for r in messages.messages:
-            #print(r.data.reaction_body.type)
-            if r.data.reaction_body.type == 1: #like
-                dt = datetime.fromtimestamp(r.data.timestamp+FARCASTER_EPOCH).strftime('%Y-%m-%d %H:%M:%S')
-                if r.data.reaction_body.target_cast_id.fid: # CastId
-                    cast_id = self.pp_cast_id(
-                        r.data.reaction_body.target_cast_id.fid,
-                        r.data.reaction_body.target_cast_id.hash.hex()
-                        )
-                    desc = f"liked {cast_id}"
-                out = f'{dt} {heart} {desc} \n' + out
-            if r.data.reaction_body.type == 2: #recast
-                dt = datetime.fromtimestamp(r.data.timestamp+FARCASTER_EPOCH).strftime('%Y-%m-%d %H:%M:%S')
-                if r.data.reaction_body.target_cast_id.fid: # CastId
-                    cast_id = self.pp_cast_id(
-                        r.data.reaction_body.target_cast_id.fid,
-                        r.data.reaction_body.target_cast_id.hash.hex()
-                        )
-                    desc = f"recasted {cast_id}"
-                out = f'{dt} {recast} {desc} \n' + out
+        page_token=1
+        count=0
+        while page_token:
+            if page_token==1:
+                page_token=None
+            messages = self.hub.GetReactionsByFid(fid, reaction_type, 1000, page_token)
+            page_token = messages.next_page_token
+            #print(messages)
+            heart = colored("❤", "red", attrs=["bold"])
+            recast = colored("♺", "green", attrs=["bold"])
+            for r in messages.messages:
+                count += 1
+                if limit and count >= limit:
+                    break
+                #print(r.data.reaction_body.type)
+                if r.data.reaction_body.type == 1: #like
+                    dt = datetime.fromtimestamp(r.data.timestamp+FARCASTER_EPOCH).strftime('%Y-%m-%d %H:%M:%S')
+                    if r.data.reaction_body.target_cast_id.fid: # CastId
+                        cast_id = self.pp_cast_id(
+                            r.data.reaction_body.target_cast_id.fid,
+                            r.data.reaction_body.target_cast_id.hash.hex()
+                            )
+                        desc = f"liked {cast_id}"
+                    else:
+                        desc = f"liked {r.data.reaction_body.target_url}"
+                    out = f'{dt} {heart} {desc} \n' + out
+                if r.data.reaction_body.type == 2: #recast
+                    dt = datetime.fromtimestamp(r.data.timestamp+FARCASTER_EPOCH).strftime('%Y-%m-%d %H:%M:%S')
+                    if r.data.reaction_body.target_cast_id.fid: # CastId
+                        cast_id = self.pp_cast_id(
+                            r.data.reaction_body.target_cast_id.fid,
+                            r.data.reaction_body.target_cast_id.hash.hex()
+                            )
+                        desc = f"recasted {cast_id}"
+                    else:
+                        desc = f"recasted {r.data.reaction_body.target_url}"
+                    out = f'{dt} {recast} {desc} \n' + out
+                
+                if r.data.reaction_body.type not in (1,2): #other
+                    desc = "UNKNOWN reaction_type={r.data.reaction_body.type}"
+                    out = f'{dt} {desc} \n' + out
+            if limit and count >= limit:
+                    break
+        print('Count=', count)
         return out
 
     def hdb_get_reactions_by_cast(self, fid:int, oxhash:str, reaction_type: int):
@@ -289,7 +309,7 @@ class Proxy:
                     u_fid = r.data.fid
                     ts = r.data.timestamp + FARCASTER_EPOCH
                     self.db_cur.execute(
-                        "INSERT OR REPLACE INTo reactions(fid,hash, u_fid, reaction_type, ts) VALUES(?,?,?,?,?)", 
+                        "INSERT OR REPLACE INTO reactions(fid,hash, u_fid, reaction_type, ts) VALUES(?,?,?,?,?)", 
                         (fid, oxhash, u_fid, reaction_type, ts)
                     )
                     self.db_conn.commit()
@@ -358,6 +378,7 @@ def main():
     parser = argparse.ArgumentParser(prog="termcast", description="Terminal-based farcaster client")
     #parser.add_argument("--expand", help="Expand cast threads", action="store_true")
     parser.add_argument("--expand", type=int, default=0, help="Expand thread, level=<EXPAND>")
+    parser.add_argument("--count", type=int, default=0, help="Limit number of resoults to <COUNT>")
     parser.add_argument("uri", type=str)
     args = parser.parse_args()
     
@@ -390,7 +411,7 @@ def main():
         sys.exit(0)
         # farcaster://<user>/(pfp|bio|url|username|casts|<link_type>)?
     if path[1:] == 'likes':
-        out = p.hdb_get_reactions_by_fid(fid=fid, reaction_type=None)
+        out = p.hdb_get_reactions_by_fid(fid=fid, reaction_type=None, limit=args.count)
         print(out)
     if path == "/casts": 
         # List all casts
