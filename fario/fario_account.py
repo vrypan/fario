@@ -12,6 +12,7 @@ from farcaster import FARCASTER_EPOCH
 from farcaster import Message
 from . __about__ import version
 from . config import get_conf, check_conf
+from web3 import Web3
 
 import argparse
 
@@ -82,6 +83,12 @@ def get_storage_limits_by_fid(args, fid):
     ret  = hub.GetCurrentStorageLimitsByFid(fid)
     limits = { StoreType.Name(l.store_type)[11:].lower(): l.limit for l in ret.limits }
     return (limits)
+
+def get_op_balance_by_addr(args, addr):
+    check_conf(CONF, ['op_eth_provider'])
+    w3 = Web3(Web3.HTTPProvider(CONF['op_eth_provider']))
+    balance = w3.eth.get_balance(addr)
+    return balance
     
 def print_account(args, account):
     def _print(key, val, rawdata=False):
@@ -93,6 +100,8 @@ def print_account(args, account):
         _print('fid',account['fid'], args.raw)
     if args.addr:
         _print('address', '0x'+account['addr'], args.raw)
+        if args.balance:
+            _print('balance', str(account['balance']/(10**18)) + ' OP ETH', args.raw)
     if args.recovery:
         _print('recovery', '0x'+account['recovery'], args.raw)
     if args.fname:
@@ -143,6 +152,8 @@ def by_fid(args, fid=None):
 
     if args.addr or args.recovery:
         account['addr'], account['recovery'] = get_addr_by_fid(args, account['fid'])
+        if args.balance:
+            account['balance'] = get_op_balance_by_addr(args, Web3.to_checksum_address('0x'+account['addr']))
     if args.fname or args.name:
         account['names'] = get_names_by_fid(args, account['fid'])
     if args.storage_rent:
@@ -187,6 +198,7 @@ def main():
     parser.add_argument("--fname", action='store_true', help="Print fname")
     parser.add_argument("--name", action='store_true', help="Print name")
     parser.add_argument("--addr", action='store_true', help="Print custody address")
+    parser.add_argument("--balance", action='store_true', help="Print custody address balance")
     parser.add_argument("--storage-rent", action='store_true', help="Print storage rent events")
     parser.add_argument("--storage-limits", action='store_true', help="Print storage limits")
     parser.add_argument("--storage-usage", action='store_true', help="Print storage usage")

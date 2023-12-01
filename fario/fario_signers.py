@@ -72,9 +72,12 @@ def signer_list(args):
         if args.with_fnames:
             if s['signer_fid'] not in fid_to_name:
                 ret = hub.GetUserNameProofsByFid(s['signer_fid'])
-                name = [ proof.name for proof in ret.proofs if proof.type==1][0].decode('ascii')
+                if ret.proofs:
+                    name = "@" + [ proof.name for proof in ret.proofs if proof.type==1][0].decode('ascii')
+                else:
+                    name = f"{s['signer_fid']} (no name found)"
                 fid_to_name[s['signer_fid']] = name
-            print(f"{s['pub_key']}\t{s['timestamp']}\t{s['signer_fid']}\t@{fid_to_name[s['signer_fid']]}")
+            print(f"{s['pub_key']}\t{s['timestamp']}\t{s['signer_fid']}\t{fid_to_name[s['signer_fid']]}")
         else:
             print(f"{s['pub_key']}\t{s['timestamp']}\t{s['signer_fid']}")
 

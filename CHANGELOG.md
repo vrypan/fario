@@ -1,7 +1,16 @@
 # Changelog
 
+<<<<<<< HEAD
 ## [0.7.7] - 2023-11-21
 - Bug fixes
+=======
+## [0.7.9] - 
+- `fario-account --balance` will show custody addr OP balance.
+
+## [0.7.8] - 2023-11-23
+- `fario-signers list --with-fnames` will not break if no
+UserNameProofs are found.
+>>>>>>> main
 
 ## [0.7.6] - 2023-11-21
 - Requires farcaster-py==0.0.9 (hub-monorepo 1.8.0)
