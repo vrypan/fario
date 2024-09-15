@@ -34,18 +34,9 @@ find = {}
 [tool.hatch.version]
 path = "fario/__about__.py"
 
-# [tool.hatch.metadata.hooks.requirements_txt]
-# files = ["requirements.txt"]
-
-[tool.hatch.envs.test]
-dependencies = [
-  "coverage[toml]",
-]
-
-
 [tool.hatch.envs.default]
 dependencies = [
-	"farcaster-py >= 0.1.1",
+	"farcaster-py >= 0.1.2",
 	"blake3",
 	"pynacl",
 ]
