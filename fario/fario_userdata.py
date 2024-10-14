@@ -22,7 +22,7 @@ USER_DATA_TYPES = {
 }
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]}, invoke_without_command=True)
-@click.version_option(version=version, prog_name="fario-user-data")
+@click.version_option(version=version, prog_name="fario-userdata")
 def fario_user_data():
     """Farcaster Network Mapper
     """
