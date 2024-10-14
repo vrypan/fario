@@ -37,10 +37,11 @@ path = "fario/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
-	"farcaster-py >= 0.1.2",
+	"farcaster-py >= 0.1.4",
 	"blake3",
 	"pynacl",
-	"click"
+	"click",
+	"python-dotenv"
 ]
 
 [tool.hatch.envs.dev]
