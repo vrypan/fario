@@ -26,7 +26,7 @@ fario2json="fario.fario2json:main"
 json2fario="fario.json2fario:json2fario"
 fario-config="fario.config:cmd_conf"
 fario-hubinfo="fario.fario_hub_info:get_hub_info"
-fario-userdata="fario.fario_userdata:main"
+fario-userdata="fario.fario_userdata:fario_user_data"
 fario-pprint="fario.textcast:main"
 
 [tool.setuptools.packages]
@@ -40,6 +40,7 @@ dependencies = [
 	"farcaster-py >= 0.1.2",
 	"blake3",
 	"pynacl",
+	"click"
 ]
 
 [tool.hatch.envs.dev]
