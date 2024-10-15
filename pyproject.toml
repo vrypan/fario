@@ -4,11 +4,18 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fario"
-dynamic = ["version", "dependencies"]
-
+dynamic = ["version"]
 readme = "README.md"
 license = "MIT"
 keywords = ['farcaster']
+
+dependencies = [
+	"farcaster-py >= 0.1.4",
+	"blake3",
+	"pynacl",
+	"click",
+	"python-dotenv"
+]
 
 [project.urls]
 Documentation = "https://github.com/vrypan/fario"
@@ -36,17 +43,13 @@ find = {}
 path = "fario/__about__.py"
 
 [tool.hatch.envs.default]
-dependencies = [
-	"farcaster-py >= 0.1.4",
-	"blake3",
-	"pynacl",
-	"click",
-	"python-dotenv"
-]
+
 
 [tool.hatch.envs.dev]
 dependencies = [
 	"farcaster-py @ {root:parent:uri}/farcaster-py/",
 	"blake3",
 	"pynacl",
+	"click",
+	"python-dotenv"
 ]
